@@ -1,23 +1,22 @@
 import DungeonMap from "../models/DungeonMap";
 import BasicGenerator from "./BasicGenerator";
-import PRNG from "prng";
 import Room from "./helpers/Room";
 import Side from "../models/Side";
-import Item from "../models/Item";
 
 // This generation strategy places rooms first -- other areas are open hallways
 export default class RoomsFirst extends BasicGenerator {
-  constructor(seed = 15) {
+  constructor(seed = 14) {
     super();
-    this.map = new DungeonMap([super.generateBlankLevel()]);
-    this.level = this.map.levels[0];
-    this.prng = new PRNG(seed);
+    this.map = new DungeonMap(seed);
+    this.level = super.generateBlankLevel(this.map);
+    this.map.levels.push(this.level);
   }
 
   generate() {
-    const numberOfRooms = this.prng.rand(2, 6);
+    const numberOfRooms = this.map.prng.rand(4, 8);
     const rooms = this.generateRooms(numberOfRooms);
 
+    // place the walls that define the room
     rooms.forEach((room) => {
       for (let x = room.offsetX; x < room.offsetX + room.width; x++) {
         for (let y = room.offsetY; y < room.offsetY + room.height; y++) {
@@ -42,7 +41,7 @@ export default class RoomsFirst extends BasicGenerator {
     rooms.forEach((room) => {
       const doorWayCubes = room.getCubesForDoorway(this.level);
       const doorWayCubesArray = [...doorWayCubes.front, ...doorWayCubes.back, ...doorWayCubes.left, ...doorWayCubes.right];
-      const doorCube = doorWayCubesArray[this.prng.rand(doorWayCubesArray.length - 1)];
+      const doorCube = doorWayCubesArray[this.map.prng.rand(doorWayCubesArray.length - 1)];
 
       // now that we have our door cube, we need to determine what direction it is in relative to the room, we'll use this to place the door
       if (doorWayCubes.front.includes(doorCube)) {
@@ -59,24 +58,26 @@ export default class RoomsFirst extends BasicGenerator {
       }
     });
 
-    const items = [
-      Item.CHEST,
-      Item.TABLE,
-      Item.BOX,
-      Item.LEVER,
-      Item.BOOKSHELF,
-      Item.KEY,
-      Item.DART_TRAP,
-      Item.LADDER,
-      Item.HOLE,
-      Item.ENEMY,
-      Item.PILLAR,
-      Item.START,
-    ];
+    // now let's place the loot
+    rooms.forEach((room) => {
+      const loot = room.loot;
+      const placements = room.placements;
 
-    for (let i = 0; i < items.length; i++) {
-      this.level.cubes[0][i].item = items[i];
-    }
+      for (let i = 0; i < loot.length; i++) {
+        let { x, y } = placements[i];
+        // x and y are relative to room origin, so we'll account for that
+        let cube = this.level.cubes[room.offsetY + y][room.offsetX + x];
+
+        // try to find a spot not next to the door or already has an item
+        while (cube.item || cube.front === Side.DOOR || cube.back === Side.DOOR || cube.left === Side.DOOR || cube.right === Side.DOOR) {
+          x = this.map.prng.rand(room.width - 1);
+          y = this.map.prng.rand(room.height - 1)
+          cube = this.level.cubes[room.offsetY + y][room.offsetX + x];
+        }
+
+        cube.item = loot[i];
+      }
+    });
 
     return this.map;
   }
@@ -85,13 +86,16 @@ export default class RoomsFirst extends BasicGenerator {
     const rooms = [];
 
     for (let i = 0; i < numberOfRooms; i++) {
-      const roomWidth = this.prng.rand(Math.floor(this.level.width / (i + 3)), Math.floor(this.level.width / (i + 2)));
-      const roomHeight = this.prng.rand(Math.floor(this.level.height / (i + 3)), Math.floor(this.level.height / (i + 2)));
+      const minWidth = Math.max(Math.floor(this.level.width / (i + 3)), 2);
+      const minHeight = Math.max(Math.floor(this.level.height / (i + 3)), 2);
+      const roomWidth = this.map.prng.rand(minWidth, Math.floor(this.level.width / (i + 2)));
+      const roomHeight = this.map.prng.rand(minHeight, Math.floor(this.level.height / (i + 2)));
       const room = new Room(
         roomWidth,
         roomHeight,
-        this.prng.rand(this.level.width - roomWidth),
-        this.prng.rand(this.level.height - roomHeight),
+        this.map.prng.rand(this.level.width - roomWidth),
+        this.map.prng.rand(this.level.height - roomHeight),
+        this.map
       );
 
       // We'll try to place the room 5 times.
@@ -101,8 +105,8 @@ export default class RoomsFirst extends BasicGenerator {
           rooms.push(room);
           break;
         } else {
-          room.offsetX = this.prng.rand(this.level.width - roomWidth);
-          room.offsetY = this.prng.rand(this.level.height - roomHeight);
+          room.offsetX = this.map.prng.rand(this.level.width - roomWidth);
+          room.offsetY = this.map.prng.rand(this.level.height - roomHeight);
         }
       }
     }

@@ -1,5 +1,8 @@
+import PRNG from "prng";
+
 export default class DungeonMap {
-  constructor(levels) {
-    this.levels = levels;
+  constructor(seed = 15) {
+    this.levels = [];
+    this.prng = new PRNG(seed);
   }
 }

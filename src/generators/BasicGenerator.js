@@ -12,7 +12,7 @@ export default class BasicGenerator {
         cubes[i][j] = new Cube({
           bottom: Side.STONE,
           x: j,
-          y: i
+          y: i,
         });
       }
     }
