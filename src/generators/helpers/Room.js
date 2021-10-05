@@ -42,8 +42,8 @@ export default class Room {
     [Room.DISPOSITIONS.BIG_FIGHT]: [
       {
         possibleItems: [Item.ENEMY],
-        min: 2,
-        max: 4,
+        min: 3,
+        max: 5,
       },
       {
         possibleItems: [Item.CHEST, Item.BOX],
@@ -102,7 +102,7 @@ export default class Room {
     [Room.DISPOSITIONS.HALLWAY]: [
       {
         possibleItems: [Item.ENEMY, Item.CHEST, Item.BOX, Item.DART_TRAP],
-        min: 0,
+        min: 1,
         max: 3,
       },
     ],

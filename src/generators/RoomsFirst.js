@@ -44,22 +44,27 @@ export default class RoomsFirst extends BasicGenerator {
     rooms.forEach((room) => {
       const doorWayCubes = room.getCubesForDoorway(this.level);
       const doorWayCubesArray = [...doorWayCubes.front, ...doorWayCubes.back, ...doorWayCubes.left, ...doorWayCubes.right];
-      const doorCube = doorWayCubesArray[this.map.prng.rand(doorWayCubesArray.length - 1)];
 
-      this.cachedDoorCubes.push(doorCube); // We cache these for lookup later
+      const numberOfDoors = this.map.prng.rand(1, room.roomSize > 30 ? 2 : 1);
 
-      // now that we have our door cube, we need to determine what direction it is in relative to the room, we'll use this to place the door
-      if (doorWayCubes.front.includes(doorCube)) {
-        this.level.cubes[doorCube.y + 1][doorCube.x].front = Side.DOOR;
-      }
-      if (doorWayCubes.back.includes(doorCube)) {
-        this.level.cubes[doorCube.y - 1][doorCube.x].back = Side.DOOR;
-      }
-      if (doorWayCubes.left.includes(doorCube)) {
-        this.level.cubes[doorCube.y][doorCube.x + 1].left = Side.DOOR;
-      }
-      if (doorWayCubes.right.includes(doorCube)) {
-        this.level.cubes[doorCube.y][doorCube.x - 1].right = Side.DOOR;
+      for (let i = 0; i < numberOfDoors; i++) {
+        const doorCube = doorWayCubesArray[this.map.prng.rand(doorWayCubesArray.length - 1)];
+
+        this.cachedDoorCubes.push(doorCube); // We cache these for lookup later
+
+        // now that we have our door cube, we need to determine what direction it is in relative to the room, we'll use this to place the door
+        if (doorWayCubes.front.includes(doorCube)) {
+          this.level.cubes[doorCube.y + 1][doorCube.x].front = Side.DOOR;
+        }
+        if (doorWayCubes.back.includes(doorCube)) {
+          this.level.cubes[doorCube.y - 1][doorCube.x].back = Side.DOOR;
+        }
+        if (doorWayCubes.left.includes(doorCube)) {
+          this.level.cubes[doorCube.y][doorCube.x + 1].left = Side.DOOR;
+        }
+        if (doorWayCubes.right.includes(doorCube)) {
+          this.level.cubes[doorCube.y][doorCube.x - 1].right = Side.DOOR;
+        }
       }
     });
 
@@ -125,11 +130,14 @@ export default class RoomsFirst extends BasicGenerator {
 
   generateHallways() {
     const cubesToCheck = []; // we need to fill in walls for these at the end
-
+    // we're going to randomly sort the doors to get some fun maze effects
+    const doors = [...this.cachedDoorCubes].sort(() => {
+      this.map.prng.rand(0, 2) > 1 ? 1 : -1;
+    });
     // start by path-finding some hallways
-    for (let i = 0; i < this.cachedDoorCubes.length - 1; i++) {
-      const startingCube = this.cachedDoorCubes[i];
-      const endingCube = this.cachedDoorCubes[i + 1];
+    for (let i = 0; i < doors.length - 1; i++) {
+      const startingCube = doors[i];
+      const endingCube = doors[i + 1];
 
       let currentCube = startingCube;
       let breadCrumbs = [currentCube];
@@ -187,7 +195,8 @@ export default class RoomsFirst extends BasicGenerator {
     const loot = lootTable.generateLoot();
 
     for (let i = 0; i < loot.length; i++) {
-      const cube = cubesToCheck[this.map.prng.rand(cubesToCheck.length - 1)]
+      const hallwaySpots = cubesToCheck.filter((i) => !this.cachedDoorCubes.includes(i)); // filter for spots in the hallway that are not next to a door
+      const cube = hallwaySpots[this.map.prng.rand(hallwaySpots.length - 1)]
       cube.item = loot[i];
     }
   }
