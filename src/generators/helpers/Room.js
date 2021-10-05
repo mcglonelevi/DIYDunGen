@@ -16,6 +16,8 @@ export default class Room {
     SMALL_FIGHT: "SMALL_FIGHT",
     LOOT: "LOOT",
     ADVANCE: "ADVANCE",
+    ENTRY: "ENTRY",
+    HALLWAY: "HALLWAY",
   };
 
   static DISPOSITION_MAPPINGS = {
@@ -90,15 +92,29 @@ export default class Room {
         max: 1,
       },
     ],
+    [Room.DISPOSITIONS.ENTRY]: [
+      {
+        possibleItems: [Item.START],
+        min: 1,
+        max: 1,
+      },
+    ],
+    [Room.DISPOSITIONS.HALLWAY]: [
+      {
+        possibleItems: [Item.ENEMY, Item.CHEST, Item.BOX, Item.DART_TRAP],
+        min: 0,
+        max: 3,
+      },
+    ],
   };
 
-  constructor(width, height, offsetX, offsetY, map) {
+  constructor(width, height, offsetX, offsetY, map, disposition = null) {
     this.width = width;
     this.height = height;
     this.offsetX = offsetX;
     this.offsetY = offsetY;
     this.map = map;
-    this.disposition = this.generateDisposition();
+    this.disposition = disposition === null ? this.generateDisposition() : disposition;
     this.lootTable = this.generateLootTable();
     this.loot = this.lootTable.generateLoot();
     this.placements = this.generatePlacements();

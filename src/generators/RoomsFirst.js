@@ -2,18 +2,21 @@ import DungeonMap from "../models/DungeonMap";
 import BasicGenerator from "./BasicGenerator";
 import Room from "./helpers/Room";
 import Side from "../models/Side";
+import LootCategory from "./helpers/LootCategory";
+import LootTable from "./helpers/LootTable";
 
 // This generation strategy places rooms first -- other areas are open hallways
 export default class RoomsFirst extends BasicGenerator {
-  constructor(seed = 14) {
+  constructor(seed = 62343466) {
     super();
     this.map = new DungeonMap(seed);
     this.level = super.generateBlankLevel(this.map);
     this.map.levels.push(this.level);
+    this.cachedDoorCubes = [];
   }
 
   generate() {
-    const numberOfRooms = this.map.prng.rand(4, 8);
+    const numberOfRooms = this.map.prng.rand(4, 6);
     const rooms = this.generateRooms(numberOfRooms);
 
     // place the walls that define the room
@@ -42,6 +45,8 @@ export default class RoomsFirst extends BasicGenerator {
       const doorWayCubes = room.getCubesForDoorway(this.level);
       const doorWayCubesArray = [...doorWayCubes.front, ...doorWayCubes.back, ...doorWayCubes.left, ...doorWayCubes.right];
       const doorCube = doorWayCubesArray[this.map.prng.rand(doorWayCubesArray.length - 1)];
+
+      this.cachedDoorCubes.push(doorCube); // We cache these for lookup later
 
       // now that we have our door cube, we need to determine what direction it is in relative to the room, we'll use this to place the door
       if (doorWayCubes.front.includes(doorCube)) {
@@ -79,12 +84,15 @@ export default class RoomsFirst extends BasicGenerator {
       }
     });
 
+    this.generateHallways();
+
     return this.map;
   }
 
   generateRooms(numberOfRooms) {
     const rooms = [];
 
+    // generate other rooms
     for (let i = 0; i < numberOfRooms; i++) {
       const minWidth = Math.max(Math.floor(this.level.width / (i + 3)), 2);
       const minHeight = Math.max(Math.floor(this.level.height / (i + 3)), 2);
@@ -95,7 +103,8 @@ export default class RoomsFirst extends BasicGenerator {
         roomHeight,
         this.map.prng.rand(this.level.width - roomWidth),
         this.map.prng.rand(this.level.height - roomHeight),
-        this.map
+        this.map,
+        i === numberOfRooms - 3 ? Room.DISPOSITIONS.ENTRY : null, // we set number of rooms back to -3 to ensure it can be placed
       );
 
       // We'll try to place the room 5 times.
@@ -113,5 +122,137 @@ export default class RoomsFirst extends BasicGenerator {
 
     return rooms;
   }
-}
 
+  generateHallways() {
+    const cubesToCheck = []; // we need to fill in walls for these at the end
+
+    // start by path-finding some hallways
+    for (let i = 0; i < this.cachedDoorCubes.length - 1; i++) {
+      const startingCube = this.cachedDoorCubes[i];
+      const endingCube = this.cachedDoorCubes[i + 1];
+
+      let currentCube = startingCube;
+      let breadCrumbs = [currentCube];
+      let visited = [currentCube];
+      
+      while (currentCube != endingCube) {
+        // Find open block
+        let openBlocks = this.getNeighborsOpenForHallway(currentCube).filter((i) => !visited.includes(i));
+
+        // if open blocks is empty, then we know that we need to backtrack to the last cube that has neighbors
+        while (openBlocks.length === 0) {
+          // pop off breadcrumb to retrace our steps
+          breadCrumbs.pop();
+          currentCube = breadCrumbs[breadCrumbs.length - 1];
+          openBlocks = this.getNeighborsOpenForHallway(currentCube).filter((i) => !visited.includes(i));
+        }
+
+        const newCube = this.findNeighborClosestToEnd(endingCube, openBlocks);
+        newCube.bottom = Side.STONE;
+        currentCube = newCube;
+        breadCrumbs.push(currentCube);
+        visited.push(currentCube);
+      }
+
+      breadCrumbs.forEach((cube) => {
+        cube.bottom = Side.STONE;
+      });
+      cubesToCheck.push(...breadCrumbs);
+    }
+
+    // fill in the walls for these
+    cubesToCheck.forEach((cube) => {
+      const {left, right, front, back} = this.getNeighbors(cube);
+
+      if (!left || left.bottom === Side.AIR) {
+        cube.left = Side.STONE;
+      }
+      if (!right || right.bottom === Side.AIR) {
+        cube.right = Side.STONE;
+      }
+      if (!front || front.bottom === Side.AIR) {
+        cube.front = Side.STONE;
+      }
+      if (!back || back.bottom === Side.AIR) {
+        cube.back = Side.STONE;
+      }
+    });
+
+    // let's throw some loot, traps, and enemies in the hallways
+    const mappings = Room.DISPOSITION_LOOT_MAPPINGS[Room.DISPOSITIONS.HALLWAY];
+    const lootCategories = mappings.map(({min, max, possibleItems}) => {
+      return new LootCategory(possibleItems, min, max, this.map.prng);
+    });
+    const lootTable = new LootTable(lootCategories);
+    const loot = lootTable.generateLoot();
+
+    for (let i = 0; i < loot.length; i++) {
+      const cube = cubesToCheck[this.map.prng.rand(cubesToCheck.length - 1)]
+      cube.item = loot[i];
+    }
+  }
+
+  findNeighborClosestToEnd(endCube, openBlocks) {
+    const distanceArray = openBlocks.map((cube) => {
+      return {
+        distance: Math.sqrt(Math.pow(endCube.x - cube.x, 2) + Math.pow(endCube.y - cube.y, 2)),
+        cube,
+      };
+    });
+
+    const sortedArray = distanceArray.sort((first, second) => {
+      return first.distance < second.distance ? -1 : 1;
+    });
+
+    return sortedArray[0].cube;
+  }
+  
+  getCube(x, y) {
+    try {
+      return this.level.cubes[y][x] || null;
+    } catch(e) {
+      return null;
+    }
+  }
+
+  getNeighborsOpenForHallway(cube) {
+    const { left, right, front, back } = this.getNeighbors(cube);
+    const options = [];
+
+    if (left && left.right === Side.AIR) {
+      options.push(left);
+    }
+    if (right && right.left === Side.AIR) {
+      options.push(right);
+    }
+    if (front && front.back === Side.AIR) {
+      options.push(front);
+    }
+    if (back && back.front === Side.AIR) {
+      options.push(back);
+    }
+
+    return options;
+  }
+
+  getNeighbors(cube) {
+    return {
+      right: this.getCube(cube.x + 1, cube.y),
+      left: this.getCube(cube.x - 1, cube.y),
+      front: this.getCube(cube.x, cube.y - 1),
+      back: this.getCube(cube.x, cube.y + 1),
+    };
+  }
+
+  findFirstCubeForHallway(cube) {
+    if (cube.front === Side.DOOR) {
+      return this.level.cubes[cube.y - 1][cube.x];
+    } else if (cube.back === Side.DOOR) {
+      return this.level.cubes[cube.y + 1][cube.x];
+    } else if (cube.left === Side.DOOR) {
+      return this.level.cubes[cube.y][cube.x - 1];
+    } else if (cube.right === Side.DOOR) {
+      return this.level.cubes[cube.y][cube.x + 1];
+    }
+  }
+}
