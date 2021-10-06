@@ -18,11 +18,45 @@
   position: relative;
 }
 
-.pixel img {
+.pixel .item {
   width: 30px;
   height: 30px;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
+}
+
+.torch {
+  width: 10px;
+  height: 10px;
+  filter: invert(80%) sepia(39%) saturate(5947%) hue-rotate(1deg) brightness(106%) contrast(88%);
+}
+
+.torch-front {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) rotate(180deg);
+}
+
+.torch-back {
+  position: absolute;
+  top: 80%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.torch-right {
+  position: absolute;
+  top: 45%;
+  left: 90%;
+  transform: translateX(-50%) translateY(-50%) rotate(270deg);
+}
+
+.torch-left {
+  position: absolute;
+  top: 45%;
+  left: 10%;
+  transform: translateX(-50%) translateY(-50%) rotate(90deg);
 }

@@ -90,8 +90,23 @@ export default class RoomsFirst extends BasicGenerator {
     });
 
     this.generateHallways();
+    this.placeTorches();
 
     return this.map;
+  }
+
+  placeTorches() {
+    const cubes = this.level.cubes.flat();
+    const cubesWithWall = cubes.filter((c) => c.hasWall())
+
+    cubesWithWall.forEach((c) => {
+      const value = this.map.prng.rand(0, 99);
+      const shouldPlace = value <= 10;
+      if (shouldPlace) {
+        const wall = c.getSidesWithWall()[0];
+        c[wall] = Side.STONE_WALL_TORCH;
+      }
+    });
   }
 
   generateRooms(numberOfRooms) {

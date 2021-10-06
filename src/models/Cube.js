@@ -22,4 +22,30 @@ export default class Cube {
     this.x = x;
     this.y = y;
   }
+
+  hasWall() {
+    return [this.front, this.back, this.left, this.right].some((wall) => wall === Side.STONE);
+  }
+
+  hasTorch() {
+    return [this.front, this.back, this.left, this.right].some((wall) => wall === Side.STONE_WALL_TORCH);
+  }
+
+  getSidesWithWall() {
+    return [
+      this.front === Side.STONE ? 'front' : null,
+      this.back === Side.STONE ? 'back' : null,
+      this.left === Side.STONE ? 'left' : null,
+      this.right === Side.STONE ? 'right' : null,
+    ].filter((v) => !!v);
+  }
+
+  getSideWithTorch() {
+    return [
+      this.front === Side.STONE_WALL_TORCH ? 'front' : null,
+      this.back === Side.STONE_WALL_TORCH ? 'back' : null,
+      this.left === Side.STONE_WALL_TORCH ? 'left' : null,
+      this.right === Side.STONE_WALL_TORCH ? 'right' : null,
+    ].filter((v) => !!v)[0];
+  }
 }
