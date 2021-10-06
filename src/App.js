@@ -9,6 +9,7 @@ export default function App() {
   const map = generator.generate();
   return (
     <div className="App">
+      <img src="img/logo.png" width="300" />
       <Grid level={map.levels[0]} />
       <input
         value={seed}

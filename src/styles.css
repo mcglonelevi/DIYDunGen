@@ -5,6 +5,7 @@
 
 .grid {
   display: grid;
+  margin: 16px auto;
 }
 
 .pixel {

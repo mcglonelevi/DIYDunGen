@@ -91,6 +91,7 @@ export default class RoomsFirst extends BasicGenerator {
 
     this.generateHallways();
     this.placeTorches();
+    this.trim();
 
     return this.map;
   }
@@ -311,5 +312,28 @@ export default class RoomsFirst extends BasicGenerator {
     } else if (cube.right === Side.DOOR) {
       return this.level.cubes[cube.y][cube.x + 1];
     }
+  }
+
+  trim() {
+    // get rid of empty rows
+    this.level.cubes = this.level.cubes.map((row) => {
+      return row.every((cube) => cube.bottom === Side.AIR) ? null : row;
+    }).filter((r) => !!r);
+
+    // get rid of empty columns
+    const numColumns = this.level.cubes[0].length;
+    let lastColumnIndex = numColumns - 1;
+
+    for (let i = lastColumnIndex; i > 0; i--) {
+      const column = this.level.cubes.map((row) => row[i]);
+      if (!column.every((cube) => cube.back === Side.AIR)) {
+        lastColumnIndex = i;
+        break;
+      }
+    }
+
+    this.level.cubes = this.level.cubes.map((row) => {
+      return row.slice(0, lastColumnIndex + 1);
+    })
   }
 }
