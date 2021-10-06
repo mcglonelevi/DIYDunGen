@@ -31,6 +31,11 @@ function Torch({cube}) {
   return <img className={`torch torch-${side}`} src="img/flame.svg" />;
 }
 
+function calculateBrightness(cube) {
+  const brightness = 90 + (cube.lightLevel * 10);
+  return `brightness(${brightness}%)`;
+}
+
 export default function Box({ cube, debug = false } = {}) {
   return (
     <div
@@ -41,6 +46,7 @@ export default function Box({ cube, debug = false } = {}) {
         borderBottomColor: getWallColor(cube.back, cube.bottom),
         borderLeftColor: getWallColor(cube.left, cube.bottom),
         borderRightColor: getWallColor(cube.right, cube.bottom),
+        filter: calculateBrightness(cube),
       }}
     >
       {debug && `${cube.x},${cube.y}`}

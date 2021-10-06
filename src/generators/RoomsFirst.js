@@ -98,14 +98,26 @@ export default class RoomsFirst extends BasicGenerator {
   placeTorches() {
     const cubes = this.level.cubes.flat();
     const cubesWithWall = cubes.filter((c) => c.hasWall())
+    const cubesWithTorch = [];
 
+    // place torches
     cubesWithWall.forEach((c) => {
       const value = this.map.prng.rand(0, 99);
       const shouldPlace = value <= 10;
       if (shouldPlace) {
         const wall = c.getSidesWithWall()[0];
         c[wall] = Side.STONE_WALL_TORCH;
+        cubesWithTorch.push(c)
       }
+    });
+
+    // now let's calculate some light levels
+    cubesWithTorch.forEach((c) => {
+      const neighbors = this.getNeighborsOpenForHallway(c); // we can abuse the hallway code to find neighbors nearby
+      c.lightLevel += 2;
+      neighbors.forEach((n) => {
+        n.lightLevel += 2;
+      });
     });
   }
 
