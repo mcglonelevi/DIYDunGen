@@ -45,7 +45,7 @@ export default class Room {
         max: 5,
       },
       {
-        possibleItems: [Item.CHEST, Item.BOX],
+        possibleItems: [Item.CHEST, Item.BOX, Item.TABLE],
         min: 0,
         max: 1,
       },
@@ -62,7 +62,7 @@ export default class Room {
         max: 2,
       },
       {
-        possibleItems: [Item.CHEST, Item.BOX, Item.BOOKSHELF],
+        possibleItems: [Item.CHEST, Item.BOX, Item.BOOKSHELF, Item.TABLE],
         min: 0,
         max: 1,
       },
@@ -79,7 +79,7 @@ export default class Room {
         max: 1,
       },
       {
-        possibleItems: [Item.CHEST, Item.BOX, Item.BOOKSHELF],
+        possibleItems: [Item.CHEST, Item.BOX, Item.BOOKSHELF, Item.TABLE],
         min: 1,
         max: 2,
       },

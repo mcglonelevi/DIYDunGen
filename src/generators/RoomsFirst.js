@@ -114,9 +114,9 @@ export default class RoomsFirst extends BasicGenerator {
     // now let's calculate some light levels
     cubesWithTorch.forEach((c) => {
       const {nearestNeighbors, distantNeighbors} = this.getNeighborsForLighting(c); // we can abuse the hallway code to find neighbors nearby
-      c.lightLevel = Math.min(6, c.lightLevel + 6);
+      c.lightLevel = Math.min(6, c.lightLevel + 5);
       nearestNeighbors.forEach((n) => {
-        n.lightLevel = Math.min(6, n.lightLevel + 4);
+        n.lightLevel = Math.min(6, n.lightLevel + 3);
       });
       distantNeighbors.forEach((n) => {
         n.lightLevel = Math.min(6, n.lightLevel + 2);
@@ -276,16 +276,16 @@ export default class RoomsFirst extends BasicGenerator {
     const { left, right, front, back } = this.getNeighbors(cube);
     const options = [];
 
-    if (left && left.right === Side.AIR) {
+    if (cube.left === Side.AIR && left && left.right === Side.AIR) {
       options.push(left);
     }
-    if (right && right.left === Side.AIR) {
+    if (cube.right === Side.AIR && right && right.left === Side.AIR) {
       options.push(right);
     }
-    if (front && front.back === Side.AIR) {
+    if (cube.front === Side.AIR && front && front.back === Side.AIR) {
       options.push(front);
     }
-    if (back && back.front === Side.AIR) {
+    if (cube.back === Side.AIR && back && back.front === Side.AIR) {
       options.push(back);
     }
 
