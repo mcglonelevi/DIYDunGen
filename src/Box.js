@@ -32,7 +32,7 @@ function Torch({cube}) {
 }
 
 function calculateBrightness(cube) {
-  const brightness = 90 + (cube.lightLevel * 10);
+  const brightness = 80 + (cube.lightLevel * 10);
   return `brightness(${brightness}%)`;
 }
 

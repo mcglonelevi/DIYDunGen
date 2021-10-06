@@ -113,10 +113,13 @@ export default class RoomsFirst extends BasicGenerator {
 
     // now let's calculate some light levels
     cubesWithTorch.forEach((c) => {
-      const neighbors = this.getNeighborsOpenForHallway(c); // we can abuse the hallway code to find neighbors nearby
-      c.lightLevel += 2;
-      neighbors.forEach((n) => {
-        n.lightLevel += 2;
+      const {nearestNeighbors, distantNeighbors} = this.getNeighborsForLighting(c); // we can abuse the hallway code to find neighbors nearby
+      c.lightLevel = Math.min(6, c.lightLevel + 6);
+      nearestNeighbors.forEach((n) => {
+        n.lightLevel = Math.min(6, n.lightLevel + 4);
+      });
+      distantNeighbors.forEach((n) => {
+        n.lightLevel = Math.min(6, n.lightLevel + 2);
       });
     });
   }
@@ -248,6 +251,25 @@ export default class RoomsFirst extends BasicGenerator {
     } catch(e) {
       return null;
     }
+  }
+
+  getNeighborsForLighting(cubeWithTorch) {
+    // we're going to do a 2-pass grab of neighbors
+    const nearestNeighbors = this.getNeighborsOpenForHallway(cubeWithTorch);
+    const farNeighbors = [];
+
+    // loop over the nearest neighbors to build up far neighbors
+    nearestNeighbors.forEach((nn) => {
+      farNeighbors.push(...this.getNeighborsOpenForHallway(nn));
+    });
+
+    // the problem now is that we have duplicated neighbors in the far neighbors bucket, so let's remove nearest neighbors and cubeWithTorch from that list.
+    const filteredFarNeighbors = farNeighbors.filter((i) => i != cubeWithTorch && !nearestNeighbors.includes(i));
+
+    return {
+      nearestNeighbors,
+      distantNeighbors: filteredFarNeighbors,
+    };
   }
 
   getNeighborsOpenForHallway(cube) {
