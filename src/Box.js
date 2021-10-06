@@ -1,7 +1,7 @@
 function getFloorColor(side) {
   switch (side.materialName) {
     case "STONE":
-      return "#888";
+      return '#888 url("img/stone-texture.png")';
     case "LAVA":
       return "#f00";
     case "AIR":
@@ -31,19 +31,19 @@ function Torch({cube}) {
   return <img className={`torch torch-${side}`} src="img/flame.svg" />;
 }
 
-export default function Box({ cube }) {
+export default function Box({ cube, debug = false } = {}) {
   return (
     <div
       className="pixel"
       style={{
-        backgroundColor: getFloorColor(cube.bottom),
+        background: getFloorColor(cube.bottom),
         borderTopColor: getWallColor(cube.front, cube.bottom),
         borderBottomColor: getWallColor(cube.back, cube.bottom),
         borderLeftColor: getWallColor(cube.left, cube.bottom),
         borderRightColor: getWallColor(cube.right, cube.bottom),
       }}
     >
-      {/* {`${cube.x},${cube.y}`} */}
+      {debug && `${cube.x},${cube.y}`}
       {cube.item && <img className="item" src={`img/${cube.item.itemName.toLowerCase()}.svg`} />}
       {cube.hasTorch() && <Torch cube={cube} />}
     </div>
