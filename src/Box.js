@@ -30,7 +30,7 @@ function getWallColor(side, bottom) {
 function Torch({cube}) {
   const side = cube.getSideWithTorch();
 
-  return <img className={`torch torch-${side}`} src="img/flame.svg" />;
+  return <img className={`torch torch-${side}`} src="img/flame.gif" />;
 }
 
 function calculateBrightness(cube) {

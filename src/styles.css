@@ -29,9 +29,8 @@
 }
 
 .torch {
-  width: 10px;
-  height: 10px;
-  filter: invert(80%) sepia(39%) saturate(5947%) hue-rotate(1deg) brightness(106%) contrast(88%);
+  width: 40px;
+  height: 15px;
 }
 
 .torch-front {
@@ -43,7 +42,7 @@
 
 .torch-back {
   position: absolute;
-  top: 80%;
+  top: 70%;
   left: 50%;
   transform: translateX(-50%);
 }
