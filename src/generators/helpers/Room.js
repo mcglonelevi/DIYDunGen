@@ -16,7 +16,6 @@ export default class Room {
     SMALL_FIGHT: "SMALL_FIGHT",
     LOOT: "LOOT",
     ADVANCE: "ADVANCE",
-    ENTRY: "ENTRY",
     HALLWAY: "HALLWAY",
   };
 
@@ -92,19 +91,17 @@ export default class Room {
         max: 1,
       },
     ],
-    [Room.DISPOSITIONS.ENTRY]: [
-      {
-        possibleItems: [Item.START],
-        min: 1,
-        max: 1,
-      },
-    ],
     [Room.DISPOSITIONS.HALLWAY]: [
       {
         possibleItems: [Item.ENEMY, Item.CHEST, Item.BOX, Item.DART_TRAP],
         min: 1,
         max: 3,
       },
+      {
+        possibleItems: [Item.START],
+        min: 1,
+        max: 1,
+      }
     ],
   };
 

@@ -109,7 +109,6 @@ export default class RoomsFirst extends BasicGenerator {
         this.map.prng.rand(this.level.width - roomWidth),
         this.map.prng.rand(this.level.height - roomHeight),
         this.map,
-        i === numberOfRooms - 3 ? Room.DISPOSITIONS.ENTRY : null, // we set number of rooms back to -3 to ensure it can be placed
       );
 
       // We'll try to place the room 5 times.
@@ -172,16 +171,16 @@ export default class RoomsFirst extends BasicGenerator {
     cubesToCheck.forEach((cube) => {
       const {left, right, front, back} = this.getNeighbors(cube);
 
-      if (!left || left.bottom === Side.AIR) {
+      if (!left || left.bottom === Side.AIR || left.right === Side.STONE) {
         cube.left = Side.STONE;
       }
-      if (!right || right.bottom === Side.AIR) {
+      if (!right || right.bottom === Side.AIR || right.left === Side.STONE) {
         cube.right = Side.STONE;
       }
-      if (!front || front.bottom === Side.AIR) {
+      if (!front || front.bottom === Side.AIR || front.back === Side.STONE) {
         cube.front = Side.STONE;
       }
-      if (!back || back.bottom === Side.AIR) {
+      if (!back || back.bottom === Side.AIR || back.front === Side.STONE) {
         cube.back = Side.STONE;
       }
     });
