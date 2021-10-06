@@ -1,3 +1,5 @@
+import Item from './models/Item';
+
 function getFloorColor(side) {
   switch (side.materialName) {
     case "STONE":
@@ -47,6 +49,11 @@ export default function Box({ cube, debug = false } = {}) {
         borderLeftColor: getWallColor(cube.left, cube.bottom),
         borderRightColor: getWallColor(cube.right, cube.bottom),
         filter: calculateBrightness(cube),
+      }}
+      onClick={() => {
+        if (cube.item && Item.ITEM_LINKS.has(cube.item)) {
+          window.open(Item.ITEM_LINKS.get(cube.item), '_blank');
+        }
       }}
     >
       {debug && `${cube.x},${cube.y}`}
