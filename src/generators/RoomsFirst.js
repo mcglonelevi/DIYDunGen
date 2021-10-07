@@ -211,16 +211,16 @@ export default class RoomsFirst extends BasicGenerator {
     cubesToCheck.forEach((cube) => {
       const {left, right, front, back} = this.getNeighbors(cube);
 
-      if (!left || left.bottom === Side.AIR || left.right === Side.STONE) {
+      if (!left || left.bottom === Side.AIR || left.right === Side.STONE || left.right === Side.STONE_WALL_DART_TRAP) {
         cube.left = Side.STONE;
       }
-      if (!right || right.bottom === Side.AIR || right.left === Side.STONE) {
+      if (!right || right.bottom === Side.AIR || right.left === Side.STONE || right.left === Side.STONE_WALL_DART_TRAP) {
         cube.right = Side.STONE;
       }
-      if (!front || front.bottom === Side.AIR || front.back === Side.STONE) {
+      if (!front || front.bottom === Side.AIR || front.back === Side.STONE || front.back === Side.STONE_WALL_DART_TRAP) {
         cube.front = Side.STONE;
       }
-      if (!back || back.bottom === Side.AIR || back.front === Side.STONE) {
+      if (!back || back.bottom === Side.AIR || back.front === Side.STONE || back.front === Side.STONE_WALL_DART_TRAP) {
         cube.back = Side.STONE;
       }
     });

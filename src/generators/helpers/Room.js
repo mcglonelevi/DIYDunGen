@@ -57,6 +57,11 @@ export default class Room {
         min: 4,
         max: 8,
       },
+      {
+        possibleItems: [Item.BOOKSHELF, Item.TABLE, Item.WELL, Item.BED],
+        min: 0,
+        max: 3,
+      },
     ],
     [Room.DISPOSITIONS.SMALL_FIGHT]: [
       {
@@ -65,7 +70,7 @@ export default class Room {
         max: 2,
       },
       {
-        possibleItems: [Item.CHEST, Item.BOX, Item.BOOKSHELF, Item.TABLE],
+        possibleItems: [Item.CHEST, Item.BOX],
         min: 0,
         max: 1,
       },
