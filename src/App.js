@@ -1,11 +1,13 @@
 import "./styles.css";
 import Grid from "./Grid";
+import Caves from "./generators/Caves";
 import RoomsFirst from "./generators/RoomsFirst";
 import {useState} from 'react';
 
 export default function App() {
   const [seed, setSeed] = useState(15);
-  const generator = new RoomsFirst(seed);
+  const [algorithm, setAlgorithm] = useState("ROOMS_FIRST");
+  const generator = algorithm === "ROOMS_FIRST" ? new RoomsFirst(seed) : new Caves(seed);
   const map = generator.generate();
   return (
     <div className="App">
@@ -18,6 +20,12 @@ export default function App() {
         }}
         type="number"
       />
+      <select value={algorithm} onChange={(e) => {
+        setAlgorithm(e.target.value);
+      }}>
+        <option value="ROOMS_FIRST">ROOMS FIRST</option>
+        <option value="CAVES">CAVES</option>
+      </select>
     </div>
   );
 }
