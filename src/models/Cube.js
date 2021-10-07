@@ -32,6 +32,10 @@ export default class Cube {
     return [this.front, this.back, this.left, this.right].some((wall) => wall === Side.STONE_WALL_TORCH);
   }
 
+  hasDartTrap() {
+    return [this.front, this.back, this.left, this.right].some((wall) => wall === Side.STONE_WALL_DART_TRAP);
+  }
+
   getSidesWithWall() {
     return [
       this.front === Side.STONE ? 'front' : null,
@@ -47,6 +51,15 @@ export default class Cube {
       this.back === Side.STONE_WALL_TORCH ? 'back' : null,
       this.left === Side.STONE_WALL_TORCH ? 'left' : null,
       this.right === Side.STONE_WALL_TORCH ? 'right' : null,
+    ].filter((v) => !!v)[0];
+  }
+
+  getSideWithDartTrap() {
+    return [
+      this.front === Side.STONE_WALL_DART_TRAP ? 'front' : null,
+      this.back === Side.STONE_WALL_DART_TRAP ? 'back' : null,
+      this.left === Side.STONE_WALL_DART_TRAP ? 'left' : null,
+      this.right === Side.STONE_WALL_DART_TRAP ? 'right' : null,
     ].filter((v) => !!v)[0];
   }
 }

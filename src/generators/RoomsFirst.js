@@ -4,6 +4,7 @@ import Room from "./helpers/Room";
 import Side from "../models/Side";
 import LootCategory from "./helpers/LootCategory";
 import LootTable from "./helpers/LootTable";
+import Item from "../models/Item";
 
 // This generation strategy places rooms first -- other areas are open hallways
 export default class RoomsFirst extends BasicGenerator {
@@ -78,7 +79,7 @@ export default class RoomsFirst extends BasicGenerator {
         // x and y are relative to room origin, so we'll account for that
         let cube = this.level.cubes[room.offsetY + y][room.offsetX + x];
 
-        // try to find a spot not next to the door or already has an item
+        // try to find a spot not next to the door or not already has an item
         while (cube.item || cube.front === Side.DOOR || cube.back === Side.DOOR || cube.left === Side.DOOR || cube.right === Side.DOOR) {
           x = this.map.prng.rand(room.width - 1);
           y = this.map.prng.rand(room.height - 1)
@@ -86,6 +87,14 @@ export default class RoomsFirst extends BasicGenerator {
         }
 
         cube.item = loot[i];
+
+        // if we are dealing with a trapped lever or trapped chest, we need to place a dart trap on a wall facing the trapped item
+        if ([Item.TRAPPED_LEVER, Item.TRAPPED_CHEST].includes(loot[i])) {
+          const possibleLocations = this.getLocationsForDartTrap(cube);
+          const keys = Object.keys(possibleLocations).filter((k) => !!possibleLocations[k]);
+          const selectedKey = keys[this.map.prng.rand(keys.length - 1)];
+          possibleLocations[selectedKey][selectedKey] = Side.STONE_WALL_DART_TRAP;
+        }
       }
     });
 
@@ -291,6 +300,59 @@ export default class RoomsFirst extends BasicGenerator {
     }
 
     return options;
+  }
+
+  getLocationsForDartTrap(cube) {
+    const returnValue = {
+      front: null,
+      back: null,
+      left: null,
+      right: null,
+    };
+
+    // starting with our current cube, we need to find the first wall in all directions
+    // Note to future self, it is possible that we find a door, in that case, we leave the side null
+    // front
+    for (let y = cube.y; y => 0; y--) {
+      if (this.level.cubes[y][cube.x].front !== Side.AIR) {
+        if (this.level.cubes[y][cube.x].front === Side.STONE) {
+          returnValue.front = this.level.cubes[y][cube.x];
+        }
+        break;
+      }
+    }
+
+    // back
+    for (let y = cube.y; y < this.level.cubes.length; y++) {
+      if (this.level.cubes[y][cube.x].back !== Side.AIR) {
+        if (this.level.cubes[y][cube.x].back === Side.STONE) {
+          returnValue.back = this.level.cubes[y][cube.x];
+        }
+        break;
+      }
+    }
+
+    // left
+    for (let x = cube.x; x >= 0; x--) {
+      if (this.level.cubes[cube.y][x].left !== Side.AIR) {
+        if (this.level.cubes[cube.y][x].left === Side.STONE) {
+          returnValue.left = this.level.cubes[cube.y][x];
+        }
+        break;
+      }
+    }
+
+    // right
+    for (let x = cube.x; x < this.level.cubes[0].length; x++) {
+      if (this.level.cubes[cube.y][x].right !== Side.AIR) {
+        if (this.level.cubes[cube.y][x].right === Side.STONE) {
+          returnValue.right = this.level.cubes[cube.y][x];
+        }
+        break;
+      }
+    }
+
+    return returnValue;
   }
 
   getNeighbors(cube) {

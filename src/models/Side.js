@@ -5,6 +5,7 @@ export default class Side {
   static AIR = new Side("AIR");
   static DOOR = new Side("DOOR");
   static STONE_WALL_TORCH = new Side("STONE_WALL_TORCH");
+  static STONE_WALL_DART_TRAP = new Side("STONE_WALL_DART_TRAP");
 
   constructor(materialName) {
     this.materialName = materialName;

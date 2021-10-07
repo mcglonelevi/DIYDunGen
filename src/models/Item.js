@@ -6,11 +6,15 @@ export default class Item {
   static BOOKSHELF = new Item('BOOKSHELF');
   static KEY = new Item('KEY');
   static DART_TRAP = new Item('DART_TRAP');
+  static SPIKE_TRAP = new Item('SPIKE_TRAP');
   static LADDER = new Item('LADDER');
   static HOLE = new Item('HOLE');
   static ENEMY = new Item('ENEMY');
   static PILLAR = new Item('PILLAR');
   static START = new Item('START');
+  static MIMIC = new Item('MIMIC');
+  static TRAPPED_CHEST = new Item('TRAPPED_CHEST');
+  static TRAPPED_LEVER = new Item('TRAPPED_LEVER');
 
   static ITEM_LINKS = new Map([
     [Item.CHEST, 'https://www.thingiverse.com/search?q=28mm+chest&type=things&sort=relevant'],

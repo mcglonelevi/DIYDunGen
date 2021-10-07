@@ -17,17 +17,20 @@ export default class Room {
     LOOT: "LOOT",
     ADVANCE: "ADVANCE",
     HALLWAY: "HALLWAY",
+    TRAP: "TRAP",
   };
 
   static DISPOSITION_MAPPINGS = {
     [Room.CATEGORIES.SM]: [
       Room.DISPOSITIONS.LOOT,
       Room.DISPOSITIONS.ADVANCE,
+      Room.DISPOSITIONS.TRAP,
     ],
     [Room.CATEGORIES.M]: [
       Room.DISPOSITIONS.LOOT,
       Room.DISPOSITIONS.ADVANCE,
       Room.DISPOSITIONS.SMALL_FIGHT,
+      Room.DISPOSITIONS.TRAP,
     ],
     [Room.CATEGORIES.L]: [
       Room.DISPOSITIONS.SMALL_FIGHT,
@@ -74,7 +77,7 @@ export default class Room {
     ],
     [Room.DISPOSITIONS.LOOT]: [
       {
-        possibleItems: [Item.DART_TRAP],
+        possibleItems: [Item.SPIKE_TRAP],
         min: 0,
         max: 1,
       },
@@ -93,12 +96,19 @@ export default class Room {
     ],
     [Room.DISPOSITIONS.HALLWAY]: [
       {
-        possibleItems: [Item.ENEMY, Item.CHEST, Item.BOX, Item.DART_TRAP],
+        possibleItems: [Item.ENEMY, Item.CHEST, Item.BOX, Item.SPIKE_TRAP],
         min: 1,
         max: 3,
       },
       {
         possibleItems: [Item.START],
+        min: 1,
+        max: 1,
+      }
+    ],
+    [Room.DISPOSITIONS.TRAP]: [
+      {
+        possibleItems: [Item.MIMIC, Item.TRAPPED_CHEST, Item.TRAPPED_LEVER],
         min: 1,
         max: 1,
       }

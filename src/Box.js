@@ -15,6 +15,7 @@ function getFloorColor(side) {
 
 function getWallColor(side, bottom) {
   switch (side.materialName) {
+    case "STONE_WALL_DART_TRAP":
     case "STONE_WALL_TORCH":
     case "STONE":
       return "#111";
@@ -31,6 +32,12 @@ function Torch({cube}) {
   const side = cube.getSideWithTorch();
 
   return <img className={`torch torch-${side}`} src="img/flame.gif" />;
+}
+
+function DartTrap({cube}) {
+  const side = cube.getSideWithDartTrap();
+
+  return <img className={`dart-trap dart-trap-${side}`} src="img/dart_trap.svg" />;
 }
 
 function calculateBrightness(cube) {
@@ -59,6 +66,7 @@ export default function Box({ cube, debug = false } = {}) {
       {debug && `${cube.x},${cube.y}`}
       {cube.item && <img className="item" src={`img/${cube.item.itemName.toLowerCase()}.svg`} />}
       {cube.hasTorch() && <Torch cube={cube} />}
+      {cube.hasDartTrap() && <DartTrap cube={cube} />}
     </div>
   );
 }
