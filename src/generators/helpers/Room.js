@@ -56,11 +56,17 @@ export default class Room {
         possibleItems: [Item.PILLAR],
         min: 4,
         max: 8,
+        canPlace: (c) => !c.hasWall(),
       },
       {
         possibleItems: [Item.BOOKSHELF, Item.TABLE, Item.WELL, Item.BED],
         min: 0,
         max: 3,
+      },
+      {
+        possibleItems: [Item.TOMBSTONE],
+        min: 0,
+        max: 1,
       },
     ],
     [Room.DISPOSITIONS.SMALL_FIGHT]: [
@@ -78,6 +84,16 @@ export default class Room {
         possibleItems: [Item.PILLAR],
         min: 0,
         max: 2,
+      },
+      {
+        possibleItems: [Item.WELL, Item.BED],
+        min: 0,
+        max: 1,
+      },
+      {
+        possibleItems: [Item.TOMBSTONE],
+        min: 0,
+        max: 1,
       },
     ],
     [Room.DISPOSITIONS.LOOT]: [
@@ -109,7 +125,12 @@ export default class Room {
         possibleItems: [Item.START],
         min: 1,
         max: 1,
-      }
+      },
+      {
+        possibleItems: [Item.TOMBSTONE],
+        min: 0,
+        max: 1,
+      },
     ],
     [Room.DISPOSITIONS.TRAP]: [
       {

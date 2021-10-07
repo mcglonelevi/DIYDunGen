@@ -1,6 +1,7 @@
 export default class Side {
   static DOOR = new Side("DOOR");
   static STONE = new Side("STONE");
+  static WOOD = new Side("WOOD");
   static LAVA = new Side("LAVA");
   static AIR = new Side("AIR");
   static DOOR = new Side("DOOR");

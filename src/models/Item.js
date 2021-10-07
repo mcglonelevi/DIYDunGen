@@ -17,6 +17,7 @@ export default class Item {
   static TRAPPED_LEVER = new Item('TRAPPED_LEVER');
   static WELL = new Item('WELL');
   static BED = new Item('BED');
+  static TOMBSTONE = new Item('TOMBSTONE');
 
   static ITEM_LINKS = new Map([
     [Item.CHEST, 'https://www.thingiverse.com/search?q=28mm+chest&type=things&sort=relevant'],

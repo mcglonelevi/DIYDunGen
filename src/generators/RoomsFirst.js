@@ -22,9 +22,10 @@ export default class RoomsFirst extends BasicGenerator {
 
     // place the walls that define the room
     rooms.forEach((room) => {
+      const floorSelection = [Side.STONE, Side.WOOD][this.map.prng.rand(1)];
       for (let x = room.offsetX; x < room.offsetX + room.width; x++) {
         for (let y = room.offsetY; y < room.offsetY + room.height; y++) {
-          this.level.cubes[y][x].bottom = Side.STONE;
+          this.level.cubes[y][x].bottom = floorSelection;
           if (x == room.offsetX) {
             this.level.cubes[y][x].left = Side.STONE;
           }
@@ -56,14 +57,11 @@ export default class RoomsFirst extends BasicGenerator {
         // now that we have our door cube, we need to determine what direction it is in relative to the room, we'll use this to place the door
         if (doorWayCubes.front.includes(doorCube)) {
           this.level.cubes[doorCube.y + 1][doorCube.x].front = Side.DOOR;
-        }
-        if (doorWayCubes.back.includes(doorCube)) {
+        } else if (doorWayCubes.back.includes(doorCube)) {
           this.level.cubes[doorCube.y - 1][doorCube.x].back = Side.DOOR;
-        }
-        if (doorWayCubes.left.includes(doorCube)) {
+        } else if (doorWayCubes.left.includes(doorCube)) {
           this.level.cubes[doorCube.y][doorCube.x + 1].left = Side.DOOR;
-        }
-        if (doorWayCubes.right.includes(doorCube)) {
+        }  else if (doorWayCubes.right.includes(doorCube)) {
           this.level.cubes[doorCube.y][doorCube.x - 1].right = Side.DOOR;
         }
       }
@@ -79,8 +77,10 @@ export default class RoomsFirst extends BasicGenerator {
         // x and y are relative to room origin, so we'll account for that
         let cube = this.level.cubes[room.offsetY + y][room.offsetX + x];
 
-        // try to find a spot not next to the door or not already has an item
-        while (cube.item || cube.front === Side.DOOR || cube.back === Side.DOOR || cube.left === Side.DOOR || cube.right === Side.DOOR) {
+
+
+        // try to find a spot not next to the door or not already has an item and check if the item has a place condition and check that too
+        while (cube.item || cube.front === Side.DOOR || cube.back === Side.DOOR || cube.left === Side.DOOR || cube.right === Side.DOOR || (loot[i] === Item.PILLAR && cube.hasWall())) {
           x = this.map.prng.rand(room.width - 1);
           y = this.map.prng.rand(room.height - 1)
           cube = this.level.cubes[room.offsetY + y][room.offsetX + x];
@@ -168,6 +168,7 @@ export default class RoomsFirst extends BasicGenerator {
   }
 
   generateHallways() {
+    const floorSelection = [Side.STONE, Side.WOOD][this.map.prng.rand(1)];
     const cubesToCheck = []; // we need to fill in walls for these at the end
     // we're going to randomly sort the doors to get some fun maze effects
     const doors = [...this.cachedDoorCubes].sort(() => {
@@ -195,14 +196,14 @@ export default class RoomsFirst extends BasicGenerator {
         }
 
         const newCube = this.findNeighborClosestToEnd(endingCube, openBlocks);
-        newCube.bottom = Side.STONE;
+        newCube.bottom = floorSelection;
         currentCube = newCube;
         breadCrumbs.push(currentCube);
         visited.push(currentCube);
       }
 
       breadCrumbs.forEach((cube) => {
-        cube.bottom = Side.STONE;
+        cube.bottom = floorSelection;
       });
       cubesToCheck.push(...breadCrumbs);
     }

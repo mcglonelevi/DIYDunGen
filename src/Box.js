@@ -4,6 +4,8 @@ function getFloorColor(side) {
   switch (side.materialName) {
     case "STONE":
       return '#888 url("img/stone-texture.png")';
+    case "WOOD":
+      return '#888 url("img/wood.jpg")';
     case "LAVA":
       return "#f00";
     case "AIR":

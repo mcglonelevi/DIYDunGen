@@ -36,6 +36,10 @@ export default class Cube {
     return [this.front, this.back, this.left, this.right].some((wall) => wall === Side.STONE_WALL_DART_TRAP);
   }
 
+  hasFloor() {
+    return !!this.bottom;
+  }
+
   getSidesWithWall() {
     return [
       this.front === Side.STONE ? 'front' : null,
