@@ -196,7 +196,6 @@ export default class RoomsFirst extends BasicGenerator {
         }
 
         const newCube = this.findNeighborClosestToEnd(endingCube, openBlocks);
-        newCube.bottom = floorSelection;
         currentCube = newCube;
         breadCrumbs.push(currentCube);
         visited.push(currentCube);
