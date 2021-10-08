@@ -50,7 +50,15 @@ export default class RoomsFirst extends BasicGenerator {
       const numberOfDoors = this.map.prng.rand(1, room.roomSize > 30 ? 2 : 1);
 
       for (let i = 0; i < numberOfDoors; i++) {
-        const doorCube = doorWayCubesArray[this.map.prng.rand(doorWayCubesArray.length - 1)];
+        let doorCube = doorWayCubesArray[this.map.prng.rand(doorWayCubesArray.length - 1)];
+
+        // we want to avoid double-doors on the corners, so we'll handle that here:
+        let cornerCubesToCheck = [this.getCube(doorCube.x + 1, doorCube.y + 1), this.getCube(doorCube.x + 1, doorCube.y - 1), this.getCube(doorCube.x - 1, doorCube.y - 1), this.getCube(doorCube.x - 1, doorCube.y + 1)].filter((x) => !!x);
+
+        while (cornerCubesToCheck.some((i) => this.cachedDoorCubes.includes(i))) {
+          doorCube = doorWayCubesArray[this.map.prng.rand(doorWayCubesArray.length - 1)];
+          cornerCubesToCheck = [this.getCube(doorCube.x + 1, doorCube.y + 1), this.getCube(doorCube.x + 1, doorCube.y - 1), this.getCube(doorCube.x - 1, doorCube.y - 1), this.getCube(doorCube.x - 1, doorCube.y + 1)].filter((x) => !!x);
+        }
 
         this.cachedDoorCubes.push(doorCube); // We cache these for lookup later
 
@@ -76,8 +84,6 @@ export default class RoomsFirst extends BasicGenerator {
         let { x, y } = placements[i];
         // x and y are relative to room origin, so we'll account for that
         let cube = this.level.cubes[room.offsetY + y][room.offsetX + x];
-
-
 
         // try to find a spot not next to the door or not already has an item and check if the item has a place condition and check that too
         while (

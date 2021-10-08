@@ -134,7 +134,7 @@ export default class Room {
     ],
     [Room.DISPOSITIONS.TRAP]: [
       {
-        possibleItems: [Item.MIMIC, Item.TRAPPED_CHEST, Item.TRAPPED_LEVER],
+        possibleItems: [Item.MIMIC, Item.TRAPPED_CHEST, Item.TRAPPED_LEVER, Item.BOULDER],
         min: 1,
         max: 1,
       }
