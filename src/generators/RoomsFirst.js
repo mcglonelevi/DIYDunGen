@@ -80,7 +80,16 @@ export default class RoomsFirst extends BasicGenerator {
 
 
         // try to find a spot not next to the door or not already has an item and check if the item has a place condition and check that too
-        while (cube.item || cube.front === Side.DOOR || cube.back === Side.DOOR || cube.left === Side.DOOR || cube.right === Side.DOOR || (loot[i] === Item.PILLAR && cube.hasWall())) {
+        while (
+          cube.item || 
+          cube.front === Side.DOOR || 
+          cube.back === Side.DOOR || 
+          cube.left === Side.DOOR || 
+          cube.right === Side.DOOR || (
+            loot[i] === Item.PILLAR && 
+            cube.hasWall() ||
+            Object.values(this.getNeighbors(cube)).filter((c) => !!c).some((c) => c.item === Item.PILLAR)
+          )) {
           x = this.map.prng.rand(room.width - 1);
           y = this.map.prng.rand(room.height - 1)
           cube = this.level.cubes[room.offsetY + y][room.offsetX + x];
