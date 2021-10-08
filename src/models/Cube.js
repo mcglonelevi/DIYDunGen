@@ -22,6 +22,7 @@ export default class Cube {
     this.x = x;
     this.y = y;
     this.lightLevel = 0;
+    this.modifier = null;
   }
 
   hasWall() {

@@ -2,6 +2,7 @@ import DungeonMap from "../models/DungeonMap";
 import BasicGenerator from "./BasicGenerator";
 import Room from "./helpers/Room";
 import Side from "../models/Side";
+import Modifier from "../models/Modifier";
 import LootCategory from "./helpers/LootCategory";
 import LootTable from "./helpers/LootTable";
 import Item from "../models/Item";
@@ -115,6 +116,7 @@ export default class RoomsFirst extends BasicGenerator {
 
     this.generateHallways();
     this.placeTorches();
+    this.placeModifiers();
     this.trim();
 
     return this.map;
@@ -389,6 +391,14 @@ export default class RoomsFirst extends BasicGenerator {
     } else if (cube.right === Side.DOOR) {
       return this.level.cubes[cube.y][cube.x + 1];
     }
+  }
+
+  placeModifiers() {
+    this.level.cubes.flat().forEach((c) => {
+      if (c.bottom !== Side.AIR && this.map.prng.rand(100) >= 98) {
+        c.modifier = this.map.prng.rand(1) === 1 ? Modifier.createDust(this.map.prng) : Modifier.createPuddle(this.map.prng);
+      }
+    });
   }
 
   trim() {

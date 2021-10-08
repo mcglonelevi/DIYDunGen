@@ -67,6 +67,10 @@ export default function Box({ cube, debug = false } = {}) {
     >
       {debug && `${cube.x},${cube.y}`}
       {cube.item && <img className="item" src={`img/${cube.item.itemName.toLowerCase()}.svg`} />}
+      {cube.modifier && console.log(cube.modifier.additionalStyles)}
+      {cube.modifier &&
+        <img className="modifier" src={`img/${cube.modifier.name.toLowerCase()}.svg`} style={cube.modifier.additionalStyles} />
+      }
       {cube.hasTorch() && <Torch cube={cube} />}
       {cube.hasDartTrap() && <DartTrap cube={cube} />}
     </div>
